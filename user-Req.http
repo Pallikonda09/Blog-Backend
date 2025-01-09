@@ -1,0 +1,39 @@
+ // ### user Api requests
+
+### 
+post http://localhost:4000/user-api/user
+Content-Type: application/json
+
+      {
+         "userType": "user",
+         "username":"Aditya",
+         "password":"Aditya",
+          "email":"Adi@gail.com"
+      }  
+
+###
+post http://localhost:4000/user-api/login
+Content-Type: application/json
+    
+              {
+                   "userType":"user",
+                   "username":"Aditya",
+                   "password":"Aditya"
+            
+              }
+ 
+   
+###reading articles of all users
+get http://localhost:4000/user-api/articles
+
+
+### write comment
+post http://localhost:4000/user-api/comment/1734273537
+Content-Type: application/json
+
+{
+   
+    "username":"srikanth",
+    "comment":"ary srikanth em chepauv ra"
+   
+}

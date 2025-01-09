@@ -1,0 +1,85 @@
+// Author api Routes
+  
+
+
+  // Creation Process
+    ###
+post http://localhost:4000/author-api/user
+Content-Type: application/json
+      
+         {
+               "userType":"author",
+                "username":"Abhi",
+                "password":"Abhi",
+                "email":"Abbi@gmail.com"
+         }  
+        
+     // login Process
+###
+post http://localhost:4000/author-api/login
+Content-Type: application/json
+    
+         {
+              "userType":"author",
+              "username":"Abhi",
+              "password":"Abhi"
+                      
+     }
+
+
+### add new article by author
+post http://localhost:4000/author-api/add-article
+Content-Type: application/json
+
+{
+   "articleId":"{{$timestamp}}",
+   "title":"C &C++",
+   "category":"Progrming",
+   "content":"  Ready to unlock your dream job? Let FlowCV lead the way. Curate stunning resumes, get invaluable feedback, and share your story with the world. Your next big career move starts now.",
+   "dateOfCreation":"{{$datetime iso8601}}",
+   "dateOfModification":"{{$datetime iso8601}}",
+   "username":"Abhi",
+   "comments": [ ],
+   "status":true
+   
+}
+
+
+
+
+      // Modified the article
+###  
+put http://localhost:4000/author-api/article
+Content-Type: application/json
+
+{
+   
+   "articleId":"1734273537",
+   "title":"C",
+   "category":"Progrming",
+   "content":"Ready to unlock your dream job? 1734273537' ",
+   "dateOfCreation":"2024-12-15T13:03:49.899Z",
+   "dateOfModification":"{{$datetime iso8601}}",
+   "username":"Abhi",
+   "comments": [ ],
+   "status":true
+   
+}
+
+// soft delete an article by a aritcleId'
+###
+put http://localhost:4000/author-api/article/1734273647
+Content-Type: application/json
+
+   {
+       
+   "articleId":"1734273647",
+   "title":"C &C++",
+   "category":"Database",
+   "content":" Ready to unlock your dream job? Let FlowCV lead the way .",
+   "dateOfCreation":"2024-02-26T13:56:22.487Z",
+   "dateOfModification":"{{$datetime iso8601}}",
+   "username":"Abhi",
+   "comments": [ ],
+   "status":false
+   }
