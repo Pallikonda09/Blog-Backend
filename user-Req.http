@@ -28,12 +28,12 @@ get http://localhost:4000/user-api/articles
 
 
 ### write comment
-post http://localhost:4000/user-api/comment/1734273537
+post http://localhost:4000/user-api/comment/1742467701156
 Content-Type: application/json
 
 {
    
-    "username":"srikanth",
+    "username":"Pallikonda21",
     "comment":"ary srikanth em chepauv ra"
    
 }

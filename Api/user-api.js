@@ -1,125 +1,97 @@
-  // create the user  Api App
-       const exp=require('express')
-       const userApp=exp.Router()
-      const bcryptjs=require('bcryptjs')
-      const expressAsyncHandler=require('express-async-handler')
-      const JWT=require('jsonwebtoken')
-      const verifyToken=require('../Middleware/verifyToken')
+const exp = require("express");
+const userApp = exp.Router();
+const bcryptjs = require("bcryptjs");
+const expressAsyncHandler = require("express-async-handler");
+const jwt = require("jsonwebtoken");
+const verifyToken = require("../Middleware/verifyToken"); // Ensure this exists
+require("dotenv").config();
 
-               let usercollection;
-               let Articlescollection
-                // get usercollection app
-                    userApp.use((req,res,next)=>{
-                           usercollection=req.app.get('userscollection')
-                           Articlescollection=req.app.get('Articlescollection')
-                            next();
-                    })
+let usercollection;
+let Articlescollection;
 
-                      // routes of a userApp
-                   
-                      // registration process
+// Middleware to get collections
+userApp.use((req, res, next) => {
+  usercollection = req.app.get("userscollection");
+  Articlescollection = req.app.get("Articlescollection"); // ✅ Fixed key
+  next();
+});
 
-                     
-                       
-                      userApp.post(
-                        "/user",
-                        expressAsyncHandler(async (req, res) => {
-                          //get user resource from client
-                          const newUser = req.body;
-                          //check for duplicate user based on username
-                          const dbuser = await usercollection.findOne({ username: newUser.username });
-                          //if user found in db
-                          if (dbuser !== null) {
-                            res.send({ message: "User existed" });
-                          } else {
-                            //hash the password
-                            const hashedPassword = await bcryptjs.hash(newUser.password, 6);
-                            //replace plain pw with hashed pw
-                            newUser.password = hashedPassword;
-                            //create user
-                            await usercollection.insertOne(newUser);
-                            //send res
-                            res.send({ message: "User Registration Success" });
-                          }
-                        })
-                      );
-             
-                      // User login route
-                      userApp.post("/login", expressAsyncHandler(async (req, res) => {
-                        const userCred = req.body; // Get credentials from client
-                        console.log("User Credentials:", userCred);
-                      
-                        // Check if username exists
-                        const dbuser = await usercollection.findOne({ username: userCred.username });
-                        console.log("Database User:", dbuser);
-                      
-                        if (!dbuser) {
-                          return res.status(400).send({ message: "Invalid username" });
-                        }
-                      
-                        // Check if password is correct
-                        const isPasswordValid = await bcryptjs.compare(userCred.password, dbuser.password);
-                        console.log("Password Valid:", isPasswordValid);
-                      
-                        if (!isPasswordValid) {
-                          return res.status(400).send({ message: "Invalid password" });
-                        }
-                      
-                        // Create JWT token
-                        const signedToken = JWT.sign(
-                          { username: dbuser.username },
-                          process.env.KEY,
-                          { expiresIn: '1d' } // Token expiration in 1 day
-                        );
-                      
-                        return res.status(200).send({
-                          message: "User login success",
-                          token: signedToken,
-                          user: dbuser,
-                        });
-                      }));
-                      
-                
-                
-                
-                
-                
-                
-            
-                             //get articles of all authors
-                              userApp.get(
-                                          "/articles", verifyToken, 
-                            expressAsyncHandler(async (req, res) => {
-                  //get articlescollection from express app
-                  const R=Articlescollection = req.app.get("Articlescollection");
-    //get all articles
-    let articlesList = await Articlescollection
-      .find({ status: true })
-      .toArray();
-    //send res
-    res.send({ message: "articles", payload: articlesList });
+// User Registration
+userApp.post("/user", expressAsyncHandler(async (req, res) => {
+  const newUser = req.body;
+  const dbuser = await usercollection.findOne({ username: newUser.username });
+
+  if (dbuser) {
+    res.send({ message: "User existed" });
+  } else {
+    newUser.password = await bcryptjs.hash(newUser.password, 6);
+    await usercollection.insertOne(newUser);
+    res.send({ message: "User created" });
+  }
+}));
+
+// User Login
+userApp.post("/login", expressAsyncHandler(async (req, res) => {
+  const userCred = req.body;
+  const dbuser = await usercollection.findOne({ username: userCred.username });
+
+  if (!dbuser) {
+    return res.send({ message: "Invalid username" });
+  }
+
+  const status = await bcryptjs.compare(userCred.password, dbuser.password);
+  if (!status) {
+    return res.send({ message: "Invalid password" });
+  }
+
+  const signedToken = jwt.sign({ username: dbuser.username }, process.env.KEY, { expiresIn: '1d' });
+
+  res.send({ message: "Login success", token: signedToken, user: dbuser });
+}));
+
+// Get Articles (Protected Route)
+userApp.get("/articles", verifyToken, expressAsyncHandler(async (req, res) => {
+  const Articlescollection = req.app.get("Articlescollection");
+  const articlesList = await Articlescollection.find({ status: true }).toArray();
+  res.send({ message: "articles", payload: articlesList });
+}));
+
+   
+
+userApp.post(
+  "/articles/:articleId/comment", 
+  verifyToken,
+  expressAsyncHandler(async (req, res) => {
+    // Get user comment content from request body
+    const { content } = req.body;
+    
+    // Get article ID from URL and convert to number
+    const articleIdFromUrl = (+req.params.articleId);
+    
+    // Create comment object with user info from token
+    const userComment = {
+      commentId: new Date().getTime(), // Generate unique ID
+      username: req.user.username,
+      userId: req.user.id,
+      content: content,
+      createdAt: new Date().toISOString()
+    };
+    
+    // Insert userComment object to comments array of article by id
+    let result = await Articlescollection.updateOne(
+      { articleId: articleIdFromUrl },
+      { $addToSet: { comments: userComment } }
+    );
+    
+    console.log(result);
+    
+    // Return the created comment so frontend can add it without refetching
+    res.status(200).send({ 
+      message: "Comment posted",
+      comment: userComment
+    });
   })
-                                    );
+);
 
 
-                     // write the comments on articles
-                              userApp.post(
-                                "/comment/:articleId", verifyToken,
-                                expressAsyncHandler(async (req, res) => {
-                                  //get user comment obj
-                                  const userComment = req.body;
-                                  const articleIdFromUrl=req.params.articleId;
-                                  //insert userComment object to comments array of article by id
-                                  let result = await Articlescollection.updateOne(
-                                    { articleId: articleIdFromUrl},
-                                    { $addToSet: { comments: userComment } }
-                                  );
-                                  console.log(result);
-                                  res.send({ message: "Comment posted" });
-                                })
-                              );
-                          
-                            
-       //export userApp
-         
-         module.exports=userApp
+module.exports = userApp;

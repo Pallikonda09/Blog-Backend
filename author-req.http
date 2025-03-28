@@ -9,9 +9,9 @@ Content-Type: application/json
       
          {
                "userType":"author",
-                "username":"Abhi",
-                "password":"Abhi",
-                "email":"Abbi@gmail.com"
+                "username":"Abhii",
+                "password":"Abhiiii",
+                "email":"Abbii@gmail.com"
          }  
         
      // login Process
@@ -21,8 +21,8 @@ Content-Type: application/json
     
          {
               "userType":"author",
-              "username":"Abhi",
-              "password":"Abhi"
+              "username":"Abhii",
+              "password":"Abhiiii"
                       
      }
 
@@ -45,6 +45,11 @@ Content-Type: application/json
 }
 
 
+// get all articles
+###
+get http://localhost:4000/author-api/articles/abhii
+
+
 
 
       // Modified the article
@@ -54,7 +59,7 @@ Content-Type: application/json
 
 {
    
-   "articleId":"1734273537",
+   "articleId":"1738852659",
    "title":"C",
    "category":"Progrming",
    "content":"Ready to unlock your dream job? 1734273537' ",
@@ -68,18 +73,26 @@ Content-Type: application/json
 
 // soft delete an article by a aritcleId'
 ###
-put http://localhost:4000/author-api/article/1734273647
+
+### soft delete an article by article id
+put http://localhost:4000/author-api/article/1741857877621
 Content-Type: application/json
 
-   {
-       
-   "articleId":"1734273647",
-   "title":"C &C++",
-   "category":"Database",
-   "content":" Ready to unlock your dream job? Let FlowCV lead the way .",
+{
+   "articleId":"1741857877621",
+   "title":"Fundamentals of JavaScript",
+   "category":"programming",
+   "content":"JavaScript is a high-level programming language that follows the ECMAScript standard. It was originally designed as a scripting language for websites but became widely adopted as a general-purpose programming language, and is currently the most popular programming language in use.[1] JavaScript is usually found running in a web browser as interactive or automated content, ranging from popup messages and live clocks to large web applications. JavaScript is also commonly used in server-side programming through platforms",
    "dateOfCreation":"2024-02-26T13:56:22.487Z",
    "dateOfModification":"{{$datetime iso8601}}",
-   "username":"Abhi",
+   "username":"vikas",
    "comments": [ ],
-   "status":false
-   }
+   "status":true
+   
+}
+
+
+###
+GET http://localhost:4000/author-api/profile/Pallikonda21
+
+
