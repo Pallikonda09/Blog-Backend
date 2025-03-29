@@ -786,28 +786,47 @@ authorApp.put('/article', verifyToken, exp.json(), expressAsyncHandler(async (re
 
 // Soft delete/restore an article
 authorApp.put('/article/:articleId', verifyToken, expressAsyncHandler(async(req, res) => {
-  //get articleId from url
-  const artileIdFromUrl = (+req.params.articleId);
-  //get article 
-  const articleToDelete = req.body;
-
-  if (articleToDelete.status === true) {
-     let modifiedArt = await Articlescollection.findOneAndUpdate(
-       { articleId: artileIdFromUrl },
-       { $set: { ...articleToDelete, status: false } },
-       { returnDocument: "after" }
-     );
-     res.send({ message: "article deleted", payload: modifiedArt.status });
-  }
-  if (articleToDelete.status === false) {
-      let modifiedArt = await Articlescollection.findOneAndUpdate(
-        { articleId: artileIdFromUrl },
-        { $set: { ...articleToDelete, status: true } },
-        { returnDocument: "after" }
-      );
-      res.send({ message: "article restored", payload: modifiedArt.status });
+  try {
+    // Get articleId from url
+    const articleIdFromUrl = (+req.params.articleId);
+    
+    // Get article from request body
+    const articleToUpdate = req.body;
+    
+    // Check if the article exists
+    const existingArticle = await Articlescollection.findOne({ articleId: articleIdFromUrl });
+    
+    if (!existingArticle) {
+      return res.status(404).send({ message: "Article not found" });
+    }
+    
+    // Determine the new status based on current status
+    const newStatus = articleToUpdate.status === true ? false : true;
+    
+    // Update the article
+    let modifiedArt = await Articlescollection.findOneAndUpdate(
+      { articleId: articleIdFromUrl },
+      { $set: { ...articleToUpdate, status: newStatus } },
+      { returnDocument: "after" }
+    );
+    
+    if (!modifiedArt) {
+      return res.status(404).send({ message: "Failed to update article" });
+    }
+    
+    // Send appropriate message based on the new status
+    const message = newStatus === true ? "Article restored" : "Article deleted";
+    res.send({ message: message, payload: modifiedArt.status });
+  } catch (error) {
+    console.error("Error updating article status:", error);
+    res.status(500).send({ message: "Internal server error occurred" });
   }
 }));
+
+
+
+
+
    
  // Permanent delete
 authorApp.delete('/article/:articleId', verifyToken, expressAsyncHandler(async (req, res) => {

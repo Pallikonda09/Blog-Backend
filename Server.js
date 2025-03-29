@@ -69,6 +69,7 @@
 
 
 
+
 const express = require('express');
 const app = express();
 require('dotenv').config();
@@ -105,11 +106,11 @@ app.use(express.static(path.join(__dirname, '../client/build')));
 async function connectDB() {
   try {
     const client = await mc.connect(process.env.DB_URL);
-    const blogdb = client.db('blogdb');
+    const Blogdb = client.db('BlogDb');
 
-    app.set('userscollection', blogdb.collection("userscollection"));
-    app.set('Articlescollection', blogdb.collection("Articlescollection"));
-    app.set('Authorscollection', blogdb.collection("Authorscollection"));
+    app.set('userscollection', Blogdb.collection("userscollection"));
+    app.set('Articlescollection', Blogdb.collection("Articlescollection"));
+    app.set('Authorscollection', Blogdb.collection("Authorscollection"));
 
     console.log("DB Connected successfully");
   } catch (error) {
@@ -134,4 +135,6 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 4000; 
 app.listen(PORT, () => {
   console.log(`Web server running on port ${PORT}`);
+  console.log("MongoDB URL:", process.env.DB_URL);
+
 });
