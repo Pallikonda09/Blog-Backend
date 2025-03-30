@@ -18,7 +18,8 @@
   },
   
   "scripts": {
-  "start": "node server.js",
+
+  "start": "node Server.js",
   "dev": "nodemon server.js",
   "build": "react-scripts build",
   "test": "react-scripts test",
