@@ -102,16 +102,9 @@ app.use('/author-api', authorApp);
 app.use('/admin-api', adminApp);
 
 // // Serve static files from React build folder
-// app.use(express.static(path.join(__dirname, '../client/build')));
+app.use(express.static(path.join(__dirname, './client/build')));
 
-const buildPath = path.join(__dirname, '..', 'client', 'build');
-console.log("Serving static files from:", buildPath);
 
-if (fs.existsSync(buildPath)) {
-  app.use(express.static(buildPath));
-} else {
-  console.error("⚠️ Warning: 'build' folder not found! Skipping frontend deployment.");
-}
 
 // MongoDB connection
 async function connectDB() {
@@ -133,7 +126,7 @@ connectDB();
 
 // React Router fallback for SPA
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/build/index.html'));
+  res.sendFile(path.join(__dirname, './client/build/index.html'));
 });
 
 // Error Handling Middleware
