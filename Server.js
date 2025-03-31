@@ -102,7 +102,9 @@ app.use('/author-api', authorApp);
 app.use('/admin-api', adminApp);
 
 // // Serve static files from React build folder
-app.use(express.static(path.join(__dirname, './client/build')));
+// app.use(express.static(path.join(__dirname, '/client/build')));
+app.use(express.static(path.join(__dirname, 'build')));
+
 
 
 
@@ -125,9 +127,13 @@ async function connectDB() {
 connectDB();
 
 // React Router fallback for SPA
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, '/client/build/index.html'));
+// });
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, './client/build/index.html'));
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
+
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
