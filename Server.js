@@ -77,6 +77,8 @@ const mc = require('mongodb').MongoClient;
 const path = require('path');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');  
+
 
 // Enable CORS before defining routes
 app.use(cors({
@@ -99,8 +101,17 @@ app.use('/user-api', userApp);
 app.use('/author-api', authorApp);
 app.use('/admin-api', adminApp);
 
-// Serve static files from React build folder
-app.use(express.static(path.join(__dirname, '../client/build')));
+// // Serve static files from React build folder
+// app.use(express.static(path.join(__dirname, '../client/build')));
+
+const buildPath = path.join(__dirname, '..', 'client', 'build');
+console.log("Serving static files from:", buildPath);
+
+if (fs.existsSync(buildPath)) {
+  app.use(express.static(buildPath));
+} else {
+  console.error("⚠️ Warning: 'build' folder not found! Skipping frontend deployment.");
+}
 
 // MongoDB connection
 async function connectDB() {
