@@ -82,7 +82,7 @@ const jwt = require('jsonwebtoken');
 
 // Enable CORS before defining routes
 app.use(cors({
-    origin: ["http://localhost:3000",,'https://blog-app-adityapallikonda.netlify.app'],
+    origin: ['https://blog-app-adityapallikonda.netlify.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,  

@@ -6,16 +6,15 @@ Content-Type: application/json
 
       {
          "userType": "user",
-         "username":"Aditya",
+         "username":"Addhitya",
          "password":"Aditya",
-          "email":"Adi@gail.com"
+          "email":"Adi256@gail.com"
       }  
 
 ###
 post http://localhost:4000/user-api/login
-Content-Type: application/json
-    
-              {
+Content-Type:application/json
+{
                    "userType":"user",
                    "username":"Aditya",
                    "password":"Aditya"
